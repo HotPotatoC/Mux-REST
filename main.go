@@ -141,4 +141,6 @@ func main() {
 
 	fmt.Printf("Server started")
 	log.Fatal(http.ListenAndServe(":8000", r))
+
+	defer fmt.Printf("Server stopped")
 }
