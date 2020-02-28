@@ -9,17 +9,31 @@ import (
 	"strconv"
 
 	"github.com/gorilla/mux"
-	"github.com/hotpotatoc/Mux-REST/models"
 )
 
+// Book Model
+type Book struct {
+	ID     string  `json:"id"`
+	Isbn   string  `json:"isbn"`
+	Title  string  `json:"title"`
+	Author *Author `json:"author"`
+}
+
+// Author Model
+type Author struct {
+	Firstname string `json:"firstname"`
+	Lastname  string `json:"lastname"`
+}
+
 // Init books var as slice Book struct
-var books []models.Book
+var books []Book
 
 func getBooks(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
+
 	err := json.NewEncoder(w).Encode(books)
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
 }
 
@@ -31,20 +45,21 @@ func getBook(w http.ResponseWriter, r *http.Request) {
 		if book.ID == params["id"] {
 			err := json.NewEncoder(w).Encode(book)
 			if err != nil {
-				return
+				log.Fatal(err)
 			}
 			return
 		}
 	}
-	err := json.NewEncoder(w).Encode(&models.Book{})
+
+	err := json.NewEncoder(w).Encode(&Book{})
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
 }
 
 func createBook(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
-	var book models.Book
+	var book Book
 	_ = json.NewDecoder(r.Body).Decode(&book)
 
 	book.ID = strconv.Itoa(rand.Intn(10000000)) // mock id
@@ -52,7 +67,7 @@ func createBook(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewEncoder(w).Encode(book)
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
 }
 
@@ -63,7 +78,7 @@ func updateBook(w http.ResponseWriter, r *http.Request) {
 	for index, book := range books {
 		if book.ID == params["id"] {
 			books = append(books[:index], books[index+1:]...)
-			var book models.Book
+			var book Book
 			_ = json.NewDecoder(r.Body).Decode(&book)
 
 			book.ID = params["id"]
@@ -79,7 +94,7 @@ func updateBook(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewEncoder(w).Encode(books)
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
 }
 
@@ -96,7 +111,7 @@ func deleteBook(w http.ResponseWriter, r *http.Request) {
 
 	err := json.NewEncoder(w).Encode(books)
 	if err != nil {
-		return
+		log.Fatal(err)
 	}
 }
 
@@ -104,17 +119,17 @@ func main() {
 	r := mux.NewRouter()
 
 	// Mock data
-	books = append(books, models.Book{
+	books = append(books, Book{
 		ID:     "1",
 		Isbn:   "2462462351",
 		Title:  "A Tale of Two Cities",
-		Author: &models.Author{Firstname: "John", Lastname: "Doe"},
+		Author: &Author{Firstname: "John", Lastname: "Doe"},
 	})
-	books = append(books, models.Book{
+	books = append(books, Book{
 		ID:     "2",
 		Isbn:   "9456846859",
 		Title:  "The Busy Road",
-		Author: &models.Author{Firstname: "Richard", Lastname: "Smith"},
+		Author: &Author{Firstname: "Richard", Lastname: "Smith"},
 	})
 
 	// Register endpoints
