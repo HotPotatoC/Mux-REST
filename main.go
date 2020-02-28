@@ -28,22 +28,22 @@ type Author struct {
 // Init books var as slice Book struct
 var books []Book
 
-func getBooks(req http.ResponseWriter, res *http.Request) {
-	req.Header().Set("Content-Type", "application/json")
+func getBooks(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 
-	err := json.NewEncoder(req).Encode(books)
+	err := json.NewEncoder(w).Encode(books)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func getBook(req http.ResponseWriter, res *http.Request) {
-	req.Header().Set("Content-Type", "application/json")
-	params := mux.Vars(res) // Get params from request
+func getBook(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r) // Get params from request
 
 	for _, book := range books {
 		if book.ID == params["id"] {
-			err := json.NewEncoder(req).Encode(book)
+			err := json.NewEncoder(w).Encode(book)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -51,40 +51,40 @@ func getBook(req http.ResponseWriter, res *http.Request) {
 		}
 	}
 
-	err := json.NewEncoder(req).Encode(&Book{})
+	err := json.NewEncoder(w).Encode(&Book{})
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func createBook(req http.ResponseWriter, res *http.Request) {
-	req.Header().Set("Content-Type", "application/json")
+func createBook(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
 	var book Book
-	_ = json.NewDecoder(res.Body).Decode(&book)
+	_ = json.NewDecoder(r.Body).Decode(&book)
 
 	book.ID = strconv.Itoa(rand.Intn(10000000)) // mock id
 	books = append(books, book)
 
-	err := json.NewEncoder(req).Encode(book)
+	err := json.NewEncoder(w).Encode(book)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func updateBook(req http.ResponseWriter, res *http.Request) {
-	req.Header().Set("Content-Type", "application/json")
-	params := mux.Vars(res)
+func updateBook(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
 
 	for index, book := range books {
 		if book.ID == params["id"] {
 			books = append(books[:index], books[index+1:]...)
 			var book Book
-			_ = json.NewDecoder(res.Body).Decode(&book)
+			_ = json.NewDecoder(r.Body).Decode(&book)
 
 			book.ID = params["id"]
 			books = append(books, book)
 
-			err := json.NewEncoder(req).Encode(book)
+			err := json.NewEncoder(w).Encode(book)
 			if err != nil {
 				return
 			}
@@ -92,15 +92,15 @@ func updateBook(req http.ResponseWriter, res *http.Request) {
 		}
 	}
 
-	err := json.NewEncoder(req).Encode(books)
+	err := json.NewEncoder(w).Encode(books)
 	if err != nil {
 		log.Fatal(err)
 	}
 }
 
-func deleteBook(req http.ResponseWriter, res *http.Request) {
-	req.Header().Set("Content-Type", "application/json")
-	params := mux.Vars(res)
+func deleteBook(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+	params := mux.Vars(r)
 
 	for index, book := range books {
 		if book.ID == params["id"] {
@@ -109,7 +109,7 @@ func deleteBook(req http.ResponseWriter, res *http.Request) {
 		}
 	}
 
-	err := json.NewEncoder(req).Encode(books)
+	err := json.NewEncoder(w).Encode(books)
 	if err != nil {
 		log.Fatal(err)
 	}
