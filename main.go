@@ -86,7 +86,7 @@ func updateBook(w http.ResponseWriter, r *http.Request) {
 
 			err := json.NewEncoder(w).Encode(book)
 			if err != nil {
-				return
+				log.Fatal(err)
 			}
 			return
 		}
